@@ -1,144 +1,91 @@
-// Helper Function
-function showSection(sectionId) {
-    document.querySelectorAll('.section').forEach(section => {
-        section.style.display = 'none';
-    });
-    document.getElementById(sectionId).style.display = 'block';
+const dataStore = {
+    users: [],
+    categories: [],
+    suppliers: [],
+    transactions: [],
+};
+
+const generateId = (prefix) => `${prefix}-${Date.now()}`;
+const showSection = (sectionId) => {
+    document.querySelectorAll('.section').forEach(section => section.classList.add('d-none'));
+    document.getElementById(sectionId).classList.remove('d-none');
+};
+
+// Pengguna
+function addUser() {
+    const name = document.getElementById('userName').value.trim();
+    const email = document.getElementById('userEmail').value.trim();
+    const id = generateId('USER');
+
+    dataStore.users.push({ id, name, email });
+    displayUsers();
+    document.getElementById('userForm').reset();
 }
 
-
-function searchCustomer() {
-    const query = document.getElementById('searchCustomer').value.toLowerCase();
-    const customers = getFromLocalStorage('customers');
-    const filtered = customers.filter(c =>
-        c.name.toLowerCase().includes(query) ||
-        c.phone.toLowerCase().includes(query)
-    );
-    displayCustomers(filtered);
+function displayUsers() {
+    const userList = document.getElementById('userList');
+    userList.innerHTML = dataStore.users.map(user => `<div>${user.id} - ${user.name} (${user.email})</div>`).join('');
 }
 
-function displayCustomers(customers = getFromLocalStorage('customers')) {
-    const list = document.getElementById('customerList');
-    list.innerHTML = customers.map(c => `
-        <div>
-            <p>${c.id} - ${c.name} (${c.phone}, ${c.email}, ${c.address})</p>
-            <button onclick="editCustomer('${c.id}')">Edit</button>
-            <button onclick="deleteCustomer('${c.id}')">Hapus</button>
-        </div>
-    `).join('');
+// Kategori
+function addCategory() {
+    const name = document.getElementById('categoryName').value.trim();
+    const id = generateId('CAT');
+
+    dataStore.categories.push({ id, name });
+    displayCategories();
+    document.getElementById('categoryForm').reset();
 }
 
-
-function editCustomer(id) {
-    const customers = getFromLocalStorage('customers');
-    const customer = customers.find(c => c.id === id);
-
-    if (!customer) return alert('Pelanggan tidak ditemukan!');
-
-    // Isi form dengan data pelanggan yang dipilih
-    document.getElementById('customerName').value = customer.name;
-    document.getElementById('customerPhone').value = customer.phone;
-    document.getElementById('customerAddress').value = customer.address;
-    document.getElementById('customerEmail').value = customer.email;
-
-    // Tambahkan fungsi simpan perubahan
-    document.getElementById('customerForm').onsubmit = function () {
-        customer.name = document.getElementById('customerName').value;
-        customer.phone = document.getElementById('customerPhone').value;
-        customer.address = document.getElementById('customerAddress').value;
-        customer.email = document.getElementById('customerEmail').value;
-
-        saveToLocalStorage('customers', customers);
-        displayCustomers();
-        document.getElementById('customerForm').reset();
-        document.getElementById('customerForm').onsubmit = addCustomer;
-    };
+function displayCategories() {
+    const categoryList = document.getElementById('categoryList');
+    categoryList.innerHTML = dataStore.categories.map(category => `<div>${category.id} - ${category.name}</div>`).join('');
 }
 
-function deleteCustomer(id) {
-    const customers = getFromLocalStorage('customers');
-    const updatedCustomers = customers.filter(c => c.id !== id);
+// Supplier
+function addSupplier() {
+    const name = document.getElementById('supplierName').value.trim();
+    const company = document.getElementById('supplierCompany').value.trim();
+    const phone = document.getElementById('supplierPhone').value.trim();
+    const address = document.getElementById('supplierAddress').value.trim();
+    const id = generateId('SUP');
 
-    saveToLocalStorage('customers', updatedCustomers);
-    displayCustomers();
+    dataStore.suppliers.push({ id, name, company, phone, address });
+    displaySuppliers();
+    document.getElementById('supplierForm').reset();
 }
 
-
-
-
-// Add Product
-function addProduct() {
-    const id = document.getElementById('productId').value.trim();
-    const name = document.getElementById('productName').value.trim();
-    const notes = document.getElementById('productNotes').value.trim();
-
-    if (!id || !name) {
-        alert("ID dan Nama Produk wajib diisi!");
-        return;
-    }
-
-    const products = getFromLocalStorage('products');
-    products.push({ id, name, notes });
-    saveToLocalStorage('products', products);
-    displayProducts();
-    document.getElementById('productForm').reset();
+function displaySuppliers() {
+    const supplierList = document.getElementById('supplierList');
+    supplierList.innerHTML = dataStore.suppliers.map(supplier => `<div>${supplier.id} - ${supplier.name}, ${supplier.company}, ${supplier.phone}, ${supplier.address}</div>`).join('');
 }
 
-// Add Transaction
+// Transaksi
 function addTransaction() {
-    const id = document.getElementById('transactionId').value.trim();
-    const customerId = document.getElementById('customerForTransaction').value.trim();
-    const productId = document.getElementById('productForTransaction').value.trim();
+    const product = document.getElementById('transactionProduct').value.trim();
+    const price = parseFloat(document.getElementById('transactionPrice').value);
+    const quantity = parseInt(document.getElementById('transactionQuantity').value);
+    const total = price * quantity;
+    const id = generateId('TRANS');
 
-    if (!id || !customerId || !productId) {
-        alert("Semua field wajib diisi!");
-        return;
-    }
-
-    const transactions = getFromLocalStorage('transactions');
-    transactions.push({ id, customerId, productId });
-    saveToLocalStorage('transactions', transactions);
+    dataStore.transactions.push({ id, product, price, quantity, total });
     displayTransactions();
     document.getElementById('transactionForm').reset();
 }
 
-// Display Data
-function displayCustomers() {
-    const customers = getFromLocalStorage('customers');
-    const list = document.getElementById('customerList');
-    list.innerHTML = customers.map(c => `<p>${c.id} - ${c.name} (${c.notes || 'Tidak ada keterangan'})</p>`).join('');
-}
-
-function displayProducts() {
-    const products = getFromLocalStorage('products');
-    const list = document.getElementById('productList');
-    list.innerHTML = products.map(p => `<p>${p.id} - ${p.name} (${p.notes || 'Tidak ada keterangan'})</p>`).join('');
-}
-
 function displayTransactions() {
-    const transactions = getFromLocalStorage('transactions');
-    const list = document.getElementById('transactionList');
-    list.innerHTML = transactions.map(t => `<p>${t.id} - Pelanggan ${t.customerId} membeli produk ${t.productId}</p>`).join('');
+    const transactionList = document.getElementById('transactionList');
+    transactionList.innerHTML = dataStore.transactions.map(transaction => `
+        <div>${transaction.id} - ${transaction.product}, ${transaction.quantity} x ${transaction.price}, Total: ${transaction.total}</div>
+    `).join('');
 }
 
-// Generate Report
+// Laporan
 function generateReport() {
-    const transactions = getFromLocalStorage('transactions');
-    const customers = getFromLocalStorage('customers');
-    const products = getFromLocalStorage('products');
-
-    const report = transactions.map(t => {
-        const customer = customers.find(c => c.id === t.customerId) || { name: 'Tidak ditemukan' };
-        const product = products.find(p => p.id === t.productId) || { name: 'Tidak ditemukan' };
-        return `<p>Transaksi ${t.id}: ${customer.name} membeli ${product.name}</p>`;
-    });
-
-    const list = document.getElementById('reportList');
-    list.innerHTML = report.join('');
+    const totalRevenue = dataStore.transactions.reduce((sum, t) => sum + t.total, 0);
+    const reportList = document.getElementById('reportList');
+    reportList.innerHTML = dataStore.transactions.map(t => `
+        <div>${t.id} - ${t.product} - ${t.total}</div>
+    `).join('');
+    document.getElementById('totalRevenue').textContent = `Total Pendapatan: Rp ${totalRevenue}`;
 }
-
-// Initialize
-showSection('customers');
-displayCustomers();
-displayProducts();
-displayTransactions();
