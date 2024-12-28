@@ -14,15 +14,16 @@
         <h1 class="text-center mb-4">Aplikasi Kasir</h1>
         <div class="row">
             <!-- Sidebar Navigation -->
-            <div class="col-md-3">
-                <div class="list-group">
-                    <button class="list-group-item list-group-item-action" onclick="showSection('users')">Pengguna</button>
-                    <button class="list-group-item list-group-item-action" onclick="showSection('categories')">Kategori</button>
-                    <button class="list-group-item list-group-item-action" onclick="showSection('suppliers')">Supplier</button>
-                    <button class="list-group-item list-group-item-action" onclick="showSection('transactions')">Transaksi</button>
-                    <button class="list-group-item list-group-item-action" onclick="showSection('reports')">Laporan</button>
-                </div>
-            </div>
+            <!-- Sidebar Navigation -->
+<div class="list-group">
+    <button class="list-group-item list-group-item-action" onclick="showSection('users')">Pengguna</button>
+    <button class="list-group-item list-group-item-action" onclick="showSection('categories')">Kategori</button>
+    <button class="list-group-item list-group-item-action" onclick="showSection('suppliers')">Supplier</button>
+    <button class="list-group-item list-group-item-action" onclick="showSection('products')">Produk</button>
+    <button class="list-group-item list-group-item-action" onclick="showSection('transactions')">Transaksi</button>
+    <button class="list-group-item list-group-item-action" onclick="showSection('reports')">Laporan</button>
+</div>
+
 
             <!-- Main Content -->
             <div class="col-md-9">
@@ -74,6 +75,35 @@
                     <div id="supplierList"></div>
                 </div>
 
+                <!-- Section: Produk -->
+<div id="products" class="section d-none">
+    <h3>Produk</h3>
+    <form id="productForm" class="mb-3">
+        <div class="mb-2">
+            <input type="text" id="productName" class="form-control" placeholder="Nama Produk" required>
+        </div>
+        <div class="mb-2">
+            <input type="number" id="productPrice" class="form-control" placeholder="Harga Produk" required>
+        </div>
+        <div class="mb-2">
+            <input type="number" id="productStock" class="form-control" placeholder="Stok Produk" required>
+        </div>
+        <div class="mb-2">
+            <select id="productCategory" class="form-control" required>
+                <option value="" disabled selected>Pilih Kategori</option>
+            </select>
+        </div>
+        <div class="mb-2">
+            <select id="productSupplier" class="form-control" required>
+                <option value="" disabled selected>Pilih Supplier</option>
+            </select>
+        </div>
+        <button type="button" class="btn btn-primary" onclick="addProduct()">Tambah Produk</button>
+    </form>
+    <div id="productList"></div>
+</div>
+
+
                 <!-- Section: Transaksi -->
                 <div id="transactions" class="section d-none">
                     <h3>Transaksi</h3>
@@ -92,6 +122,19 @@
                     <div id="transactionList"></div>
                 </div>
 
+
+
+
+<div class="mb-3">
+    <select id="reportFilter" class="form-control">
+        <option value="all">Semua Transaksi</option>
+        <option value="category">Berdasarkan Kategori</option>
+        <option value="supplier">Berdasarkan Supplier</option>
+        <option value="product">Berdasarkan Produk</option>
+    </select>
+</div>
+
+                
                 <!-- Section: Laporan -->
                 <div id="reports" class="section d-none">
                     <h3>Laporan</h3>
