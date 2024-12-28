@@ -83,34 +83,84 @@
         dataStore.suppliers.forEach(sup => supplierSelect.innerHTML += `<option value="${sup.name}">${sup.name}</option>`);
     }
 
+
+
+
+
     // Transaksi
-    function addTransaction() {
-        const productId = document.getElementById('transactionProduct').value;
-        const quantity = parseInt(document.getElementById('transactionQuantity').value);
-        const product = dataStore.products.find(p => p.id === productId);
-        if (!product || quantity > product.stock) return alert('Produk tidak valid atau stok tidak mencukupi!');
-        product.stock -= quantity;
-        dataStore.transactions.push({
-            id: generateId('TRANS'),
-            product: product.name,
-            quantity,
-            price: product.price,
-            total: product.price * quantity
-        });
-        displayTransactions();
-        populateTransactionProducts();
-        document.getElementById('transactionForm').reset();
-    }
-    function displayTransactions() {
-        document.getElementById('transactionList').innerHTML = dataStore.transactions.map(trans =>
-            `<div>${trans.id} - ${trans.product} | Jumlah: ${trans.quantity} | Total: Rp${trans.total}</div>`).join('');
-    }
-    function populateTransactionProducts() {
-        const productSelect = document.getElementById('transactionProduct');
-        productSelect.innerHTML = '<option value="" disabled selected>Pilih Produk</option>';
-        dataStore.products.filter(prod => prod.stock > 0).forEach(prod =>
-            productSelect.innerHTML += `<option value="${prod.id}">${prod.name}</option>`);
-    }
+function addTransaction() {
+    const productId = document.getElementById('transactionProduct').value;
+    const quantity = parseInt(document.getElementById('transactionQuantity').value);
+    const discount = parseFloat(document.getElementById('transactionDiscount').value) || 0;
+    const paymentMethod = document.getElementById('paymentMethod').value;
+    const payment = parseFloat(document.getElementById('transactionPayment').value);
+
+    const product = dataStore.products.find(p => p.id === productId);
+    if (!product) return alert('Produk tidak valid!');
+    if (quantity > product.stock) return alert('Stok tidak mencukupi!');
+
+    // Hitung total harga dengan diskon
+    const subtotal = product.price * quantity;
+    const totalDiscount = discount * quantity;
+    const totalPrice = subtotal - totalDiscount;
+
+    // Kurangi stok produk
+    product.stock -= quantity;
+
+    // Tentukan status dan kembalian
+    const status = payment >= totalPrice ? 'Lunas' : 'Belum Lunas';
+    const change = payment > totalPrice ? payment - totalPrice : 0;
+
+    // Simpan transaksi
+    dataStore.transactions.push({
+        id: generateId('TRANS'),
+        product: product.name,
+        quantity,
+        price: product.price,
+        subtotal,
+        discount: totalDiscount,
+        total: totalPrice,
+        paymentMethod,
+        payment,
+        change,
+        status
+    });
+
+    // Tampilkan transaksi dan perbarui stok
+    displayTransactions();
+    populateTransactionProducts();
+    document.getElementById('transactionForm').reset();
+}
+
+
+
+function displayTransactions() {
+    document.getElementById('transactionList').innerHTML = dataStore.transactions.map(trans =>
+        `<div class="border p-2 rounded mb-2">
+            <p><strong>Produk:</strong> ${trans.product}</p>
+            <p><strong>Jumlah:</strong> ${trans.quantity}</p>
+            <p><strong>Harga:</strong> Rp${trans.price}</p>
+            <p><strong>Subtotal:</strong> Rp${trans.subtotal}</p>
+            <p><strong>Diskon:</strong> Rp${trans.discount}</p>
+            <p><strong>Total:</strong> Rp${trans.total}</p>
+            <p><strong>Metode Pembayaran:</strong> ${trans.paymentMethod}</p>
+            <p><strong>Jumlah Pembayaran:</strong> Rp${trans.payment}</p>
+            <p><strong>Kembalian:</strong> Rp${trans.change}</p>
+            <p><strong>Status:</strong> ${trans.status}</p>
+        </div>`).join('');
+}
+
+
+function populateTransactionProducts() {
+    const productSelect = document.getElementById('transactionProduct');
+    productSelect.innerHTML = '<option value="" disabled selected>Pilih Produk</option>';
+    dataStore.products.filter(prod => prod.stock > 0).forEach(prod =>
+        productSelect.innerHTML += `<option value="${prod.id}">${prod.name}</option>`);
+}
+
+
+
+
 
     // Laporan
     function generateReport() {
