@@ -74,15 +74,26 @@
             </div>
 
             <!-- Transaksi -->
-            <div id="transactions" class="section">
-                <h3>Transaksi</h3>
-                <form id="transactionForm" class="mb-3">
-                    <select id="transactionProduct" class="form-control mb-2"></select>
-                    <input type="number" id="transactionQuantity" class="form-control mb-2" placeholder="Jumlah">
-                    <button type="button" class="btn btn-primary" onclick="addTransaction()">Tambah Transaksi</button>
-                </form>
-                <div id="transactionList"></div>
-            </div>
+
+<div id="transactions" class="section">
+    <h3>Transaksi</h3>
+    <form id="transactionForm" class="mb-3">
+        <select id="transactionProduct" class="form-control mb-2"></select>
+        <input type="number" id="transactionQuantity" class="form-control mb-2" placeholder="Jumlah">
+        <input type="number" id="transactionDiscount" class="form-control mb-2" placeholder="Diskon per Item (Rp)">
+        <select id="paymentMethod" class="form-control mb-2">
+            <option value="cash">Cash</option>
+            <option value="transfer">Transfer</option>
+            <option value="qr">QR</option>
+        </select>
+        <input type="number" id="transactionPayment" class="form-control mb-2" placeholder="Jumlah Pembayaran (Rp)">
+        <button type="button" class="btn btn-primary" onclick="addTransaction()">Tambah Transaksi</button>
+    </form>
+    <div id="transactionList"></div>
+</div>
+
+
+            
 
             <!-- Laporan -->
             <div id="reports" class="section">
